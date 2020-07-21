@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .box {
+            width: 500px;
+            height: 500px;
+        }
+
+        .middle {
+            width: 430px;
+            height: 430px;
+            margin-left: 35px;
+            overflow: hidden;
+            background-image: url(imgs/1.png);
+        }
+
+        .list {
+            display: none;
+        }
+
+        .small {
+            width: 420px;
+            height: 70px;
+            margin-left: 40px;
+        }
+
+        .item {
+            width: 60px;
+            height: 60px;
+            margin: 0px 10px;
+            cursor: pointer;
+            float: left;
+        }
+
+        .mark {
+            /*应该是把图片放在这个上面，它的透明度为0，是个block*/
+            position: absolute;
+            display: block;
+            width: 430px;
+            height: 430px;
+            background-color: #fff;
+            filter: alpha(opacity=0);
+            /*过滤器，目前只有少数浏览器支持*/
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .float-box {
+            display: none;
+            width: 160px;
+            height: 120px;
+            position: absolute;
+            background: #ffffcc;
+            border: 1px solid #ccc;
+            filter: alpha(opacity=50);
+            opacity: 0.5;
+        }
+
+        .big-box {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 460px;
+            width: 400px;
+            height: 300px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            z-index: 1;
+            ;
+        }
+
+        .big-box img{
+            position: absolute;
+            z-index: 5;
+            width:860px;
+            height:860px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <div class="middle">
+            <div class="list">
+                <div class="mark"></div>
+                <div class="float-box"></div>
+                <img src="imgs/1.png" alt="">
+            </div>
+            <div class="list">
+                <div class="mark"></div>
+                <div class="float-box"></div>
+                <img src="imgs/2.png" alt="">
+            </div>
+            <div class="list">
+                <div class="mark"></div>
+                <div class="float-box"></div>
+                <img src="imgs/3.png" alt="">
+            </div>
+            <div class="list">
+                <div class="mark"></div>
+                <div class="float-box"></div>
+                <img src="imgs/4.png" alt="">
+            </div>
+            <div class="list">
+                <div class="mark"></div>
+                <div class="float-box"></div>
+                <img src="imgs/1.png" alt="">
+            </div>
+        </div>
+        <div class="small">
+            <div class="item">
+                <img src="imgs/1.png" alt="" style="width: 60px;height: 60px;margin-top: 10px;">
+            </div>
+            <div class="item">
+                <img src="imgs/2.png" alt="" style="width: 60px;height: 60px;margin-top: 10px;">
+            </div>
+            <div class="item">
+                <img src="imgs/3.png" alt="" style="width: 60px;height: 60px;margin-top: 10px;">
+            </div>
+            <div class="item">
+                <img src="imgs/4.png" alt="" style="width: 60px;height: 60px;margin-top: 10px;">
+            </div>
+            <div class="item">
+                <img src="imgs/1.png" alt="" style="width: 60px;height: 60px;margin-top: 10px;">
+            </div>
+        </div>
+        <div class="big-box" style="overflow: hidden;height:430px;">
+            <img src="imgs/1.png" alt="">
+        </div>
+    </div>
+
+    <script>
+        var lists = document.querySelectorAll(".list");
+        var items = document.querySelectorAll(".item");
+
+        for (let i = 0; i < items.length; i++) {
+            items[i].onmouseover = function () {
+                lists[i].style.display = "block";
+                lists[i].onmouseover = function () {
+                    lists[i].style.display = "block";
+                }
+                lists[i].onmouseout = function () {
+                    lists[i].style.display = "none";
+                }
+            }
+            items[i].onmouseout = function () {
+                lists[i].style.display = "none";
+            }
+        }
+    </script>
+
+<script>
+    window.onload = function () {
+        //找六个元素：demo，smallBox,foatBox,mark,bigfloatBox,imgs,
+        var objDemo=document.querySelector(".box");
+        var objSmallBox=document.querySelectorAll(".middle")[0];
+        var objMarkBox=document.querySelector(".mark");
+        var objFloatBox=document.querySelector(".float-box");
+        var objBigBox=document.querySelector(".big-box");
+        var objBigBoxImg=objBigBox.querySelector(".big-box img");
+
+        //给小盒子添加事件，移入和移出
+        //移入：浮动的box和和bigBox显示
+        objSmallBox.onmouseover=function(){
+            objFloatBox.style.display="block";
+            objBigBox.style.display="block";
+        }
+        //移出：浮动的box和bigBox隐藏
+        objSmallBox.onmouseout=function(){
+            objFloatBox.style.display="none";
+            objBigBox.style.display="none";
+        }
+
+        //给小盒子添加鼠标移动事件
+        objMarkBox.onmousemove=function(ev){
+            var _event=ev||window.event;//做兼容性，兼容IE
+            //1计算值：
+            var left=_event.clientX-objDemo.offsetLeft-objSmallBox.offsetLeft-objFloatBox.offsetWidth/2;
+            var top=_event.clientY-objDemo.offsetTop-objSmallBox.offsetTop-objFloatBox.offsetHeight/2;
+
+            //5.优化，在前面加判断,不让其溢出，加判断
+            if(left<0) left=0;
+            if(top<0) top=0;
+            if(left>objSmallBox.offsetWidth-objFloatBox.offsetWidth)
+                    left=objSmallBox.offsetWidth-objFloatBox.offsetWidth;
+            if(top>objSmallBox.offsetHeight-objFloatBox.offsetHeight)
+                    top=objSmallBox.offsetHeight-objFloatBox.offsetHeight;
+
+            //2把值赋值给放大镜
+            objFloatBox.style.left=left+"px";
+            objFloatBox.style.top=top+"px";
+
+            //3计算比例
+            var percentX=left/(objMarkBox.offsetWidth-objFloatBox.offsetWidth);
+            var percentY=top/(objMarkBox.offsetHeight-objFloatBox.offsetHeight);
+
+            //4利用这个比例计算距离后赋值给右侧的图片
+            objBigBoxImg.style.left=-percentX*(objBigBoxImg.offsetWidth-objBigBox.offsetWidth)+"px";
+            objBigBoxImg.style.top=-percentY*(objBigBoxImg.offsetHeight-objBigBox.offsetHeight)+"px";
+        }
+
+    }
+</script>
+</body>
+
+</html>
